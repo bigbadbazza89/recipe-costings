@@ -24,14 +24,20 @@ def get_non_empty_string(prompt):
         print("Input cannot be empty.")
 
 # 🔍 Fuzzy Matching Helper
-def suggest_name(name, known_names):
-    matches = difflib.get_close_matches(name, known_names, n=1, cutoff=0.7)
-    if matches:
-        suggestion = matches[0]
-        confirm = input(f"Did you mean '{suggestion}' instead of '{name}'? (y/n): ").lower()
-        if confirm == 'y':
-            return suggestion
-    return name
+def suggest_name(input_name, valid_names):
+    input_name_lower = input_name.lower()
+    for name in valid_names:
+        if name.lower() == input_name_lower:
+            return name  # Exact match, no prompt
+
+    # Basic fuzzy suggestion: startswith or contains
+    suggestions = [name for name in valid_names if input_name_lower in name.lower() or name.lower().startswith(input_name_lower)]
+    if suggestions:
+        suggestion = suggestions[0]
+        confirm = input(f"Did you mean '{suggestion}' instead of '{input_name}'? (y/n): ").strip().lower()
+        return suggestion if confirm == 'y' else input_name
+
+    return input_name
 
 # 🧱 Ingredient Class
 class Ingredient:
@@ -111,17 +117,9 @@ class RecipeManager:
             print("📭 No recipes stored yet.")
             return
 
-        print("\n📚 Stored Recipes:")
+        print("\n📚 Stored Recipe Costings:")
         for name, cost in self.recipes_db.items():
             print(f" - {name}: ${cost:.2f}")
-
-        name = get_non_empty_string("\nEnter recipe name to view cost: ")
-        name = suggest_name(name, self.recipes_db.keys())
-        cost = self.recipes_db.get(name)
-        if cost:
-            print(f"\n📘 Cost per portion for '{name}': ${cost:.2f}")
-        else:
-            print("❌ Recipe not found.")
 
 # 🚀 Main Program
 def main():
