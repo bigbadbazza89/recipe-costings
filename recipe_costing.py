@@ -118,7 +118,8 @@ class RecipeManager:
             return
 
         print("\n📚 Stored Recipe Costings:")
-        for name, cost in self.recipes_db.items():
+        for name in sorted(self.recipes_db):
+            cost = self.recipes_db[name]
             print(f" - {name}: ${cost:.2f}")
 
 # 🚀 Main Program
